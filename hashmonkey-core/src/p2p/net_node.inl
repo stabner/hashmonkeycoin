@@ -706,7 +706,7 @@ namespace nodetool
     {
       if (m_nettype == cryptonote::TESTNET)
       {
-        full_addrs.insert("seednode.hashmonkey.cloud:48080");
+        full_addrs.insert("seednode.hashmonkeys.cloud:48080");
         full_addrs.insert("155.4.209.124:48080");
       }
       return full_addrs;

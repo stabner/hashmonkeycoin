@@ -5,7 +5,7 @@ Public testnet only. **Always use testnet** until mainnet is announced.
 | Item | Value |
 |------|--------|
 | Download | [GitHub Release v0.2.1-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.1-testnet) |
-| Seed node | `155.4.209.124:48080` |
+| Seed node | `seednode.hashmonkeys.cloud:48080` |
 | P2P port | **48080** |
 | RPC port | **48081** |
 | Block explorer | https://explorer.hashmonkeys.cloud |
@@ -29,7 +29,7 @@ The node (`hashmonkeyd`) stores the blockchain and talks to other peers. The wal
    This starts the testnet daemon and optionally opens the GUI.
 4. **Manual start** (same thing, step by step):
    ```powershell
-   .\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer 155.4.209.124:48080
+   .\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
    ```
 5. Wait until you see **“You are now synchronized with the network”** (may take a minute on first sync).
 6. In the daemon window, type **`status`** and press Enter. You should see **testnet**, a **height** number, and **outgoing connections** ≥ 1.
@@ -50,7 +50,7 @@ The node (`hashmonkeyd`) stores the blockchain and talks to other peers. The wal
    ```
 2. Run:
    ```bash
-   ./hashmonkeyd --testnet --check-updates=disabled --add-peer 155.4.209.124:48080
+   ./hashmonkeyd --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
    ```
 3. Type **`status`** when the prompt appears.
 
@@ -129,7 +129,7 @@ Or ask in community channels for testnet HMNY from the faucet/seed operator.
 |---------|-----|
 | Wallet says “disconnected” | Start `hashmonkeyd --testnet` first; confirm node is `127.0.0.1:48081` and network is **Testnet**. |
 | Daemon on mainnet by mistake | Restart with **`--testnet`**. |
-| Height stays at 0 | Add peer: `--add-peer 155.4.209.124:48080` |
+| Height stays at 0 | Add peer: `--add-peer seednode.hashmonkeys.cloud:48080` |
 | “Monero” in old log lines | Re-download **v0.2.1-testnet** release binaries (newer builds say HashmonkeyCoin). |
 | Windows blocks zip | Extract on PC; Defender may flag mining tools — core daemon/GUI from release are intended for use. |
 
@@ -148,12 +148,12 @@ Mainnet is **not launched** yet. Do not expect mainnet seeds or value.
 ```powershell
 # Windows — one-liner after extracting zip
 cd windows
-.\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer 155.4.209.124:48080
+.\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
 ```
 
 ```bash
 # Linux
-./hashmonkeyd --testnet --check-updates=disabled --add-peer 155.4.209.124:48080
+./hashmonkeyd --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
 ```
 
 **GUI node setting:** `127.0.0.1:48081` · **Network:** Testnet
