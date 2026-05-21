@@ -43,7 +43,7 @@ Use **`print_cn`** in the daemon window to list each connection and whether it i
 ### Windows
 
 1. Download **`hmny-testnet-windows-x64.zip`** from the release page and extract it (e.g. to `Desktop\HMNY`).
-2. Open **PowerShell** in the `windows` folder inside the extract.
+2. Open **PowerShell** in **`windows\wallet-gui`** (daemon and GUI live in the same folder).
 3. Start the daemon (copy/paste this one line):
    ```powershell
    .\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
@@ -145,9 +145,9 @@ You need a **running testnet daemon** first (Part 1), unless you use a **remote 
 
 ### Windows
 
-1. Make sure **`hashmonkeyd.exe`** is running with **`--testnet`** (see Part 1).
-2. Start the wallet (daemon must already be running from step 3 above):
-   - `windows\wallet-gui\hashmonkey-wallet-gui.exe`
+1. Make sure **`hashmonkeyd.exe`** is running with **`--testnet`** from **`windows\wallet-gui`** (see Part 1).
+2. Start the wallet in the **same folder** (daemon must already be running):
+   - `.\hashmonkey-wallet-gui.exe`
 3. **First time — create a wallet**
    - Choose language → **Advanced mode** (simple mode may require mainnet).
    - Network: select **Testnet**.
@@ -222,8 +222,9 @@ Mainnet is **not launched** yet. Do not expect mainnet seeds or value.
 
 ```powershell
 # Windows
-cd windows
+cd windows\wallet-gui
 .\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
+# then: .\hashmonkey-wallet-gui.exe
 ```
 
 ```bash
