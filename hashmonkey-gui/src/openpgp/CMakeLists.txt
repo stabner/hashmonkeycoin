@@ -19,3 +19,5 @@ target_link_libraries(openpgp
   PUBLIC
     ${GCRYPT_LIBRARY}
     ${GPG_ERROR_LIBRARY})
+
+set_target_properties(openpgp PROPERTIES CXX_STANDARD 17 CXX_STANDARD_REQUIRED ON)

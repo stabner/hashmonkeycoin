@@ -82,6 +82,8 @@ set_target_properties(hashmonkey-wallet-gui PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     MACOSX_BUNDLE TRUE
     MACOSX_BUNDLE_INFO_PLIST "${CMAKE_SOURCE_DIR}/share/Info.plist"
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
 )
 
 # OpenGL

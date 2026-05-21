@@ -36,6 +36,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/thread.hpp>
+#include <type_traits>
 
 namespace epee
 {
@@ -78,9 +79,15 @@ namespace epee
 
   using critical_section = boost::recursive_mutex;
 
+#if defined(__MINGW32__) || (defined(_WIN32) && defined(__GNUC__))
+#define  CRITICAL_REGION_LOCAL(x) boost::unique_lock<typename std::remove_reference<decltype(x)>::type> critical_region_var(x)
+#define  CRITICAL_REGION_BEGIN(x) { boost::this_thread::sleep_for(boost::chrono::milliseconds(epee::debug::g_test_dbg_lock_sleep())); boost::unique_lock<typename std::remove_reference<decltype(x)>::type> critical_region_var(x)
+#define  CRITICAL_REGION_LOCAL1(x) { boost::this_thread::sleep_for(boost::chrono::milliseconds(epee::debug::g_test_dbg_lock_sleep()));} boost::unique_lock<typename std::remove_reference<decltype(x)>::type> critical_region_var1(x)
+#else
 #define  CRITICAL_REGION_LOCAL(x) boost::unique_lock critical_region_var(x)
 #define  CRITICAL_REGION_BEGIN(x) { boost::this_thread::sleep_for(boost::chrono::milliseconds(epee::debug::g_test_dbg_lock_sleep())); boost::unique_lock critical_region_var(x)
 #define  CRITICAL_REGION_LOCAL1(x) { boost::this_thread::sleep_for(boost::chrono::milliseconds(epee::debug::g_test_dbg_lock_sleep()));} boost::unique_lock critical_region_var1(x)
+#endif
 
 #define  CRITICAL_REGION_END() }
 
