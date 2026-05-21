@@ -480,6 +480,9 @@ namespace cryptonote
   {
     if(!m_p2p.get_payload_object().is_synchronized())
     {
+      // Allow RPC (e.g. start_mining) on a solo seed that is already at its chain tip.
+      if (m_core.get_current_blockchain_height() >= m_core.get_target_blockchain_height())
+        return true;
       return false;
     }
     return true;

@@ -756,9 +756,14 @@ namespace cryptonote
     r = m_miner.init(vm, m_nettype);
     CHECK_AND_ASSERT_MES(r, false, "Failed to initialize miner instance");
 
-    // Solo genesis chain: mining via --start-mining must not wait for a peer handshake.
-    if (m_miner.mining_requested() && m_blockchain_storage.get_db().height() <= 1)
-      on_synchronized();
+    // Solo / seed node: start --start-mining without waiting for a peer handshake when already at chain tip.
+    if (m_miner.mining_requested())
+    {
+      const uint64_t height = m_blockchain_storage.get_db().height();
+      const uint64_t target = get_target_blockchain_height();
+      if (height <= 1 || height >= target)
+        on_synchronized();
+    }
 
     if (!keep_alt_blocks && !m_blockchain_storage.get_db().is_read_only())
       m_blockchain_storage.get_db().drop_alt_blocks();

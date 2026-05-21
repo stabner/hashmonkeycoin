@@ -704,7 +704,11 @@ namespace nodetool
     // HashmonkeyCoin: never bootstrap to Monero seed IPs; mainnet seeds added at launch only.
     if (0 == strcmp(CRYPTONOTE_NAME, "hashmonkeycoin"))
     {
-      // Configure testnet seeds at deploy time (see README.md). No public seeds until announced.
+      if (m_nettype == cryptonote::TESTNET)
+      {
+        full_addrs.insert("seednode.hashmonkey.cloud:48080");
+        full_addrs.insert("155.4.209.124:48080");
+      }
       return full_addrs;
     }
     if (m_nettype == cryptonote::TESTNET)

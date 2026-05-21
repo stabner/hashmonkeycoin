@@ -1,4 +1,7 @@
-# Add one host:port per line, then insert into src/p2p/net_node.inl (get_ip_seed_nodes, TESTNET block)
-# or start daemons with: hashmonkeyd --testnet --add-peer=HOST:48080
+# HMNY testnet seeds (also baked into hashmonkey-core for builds after net_node.inl change):
 #
-# example.seed.example.com:48080
+#   seednode.hashmonkey.cloud:48080
+#   155.4.209.124:48080
+#
+# Wallets: remote node seednode.hashmonkey.cloud:48081 — bootstrap address empty.
+# Explorer: https://explorer.hashmonkeys.cloud
