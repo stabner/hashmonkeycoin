@@ -18,12 +18,11 @@ HashmonkeyCoin is a Monero-based privacy coin fork with HMNY branding, custom ne
 
 ```
 hashmonkey-core/  # HMNY core (hashmonkeyd, wallets, blockchain tools)
-hashmonkey-gui/  # HMNY desktop GUI (hashmonkey-wallet-gui)
-scripts/         # Branding, build, and testnet helpers
-logo/            # Brand assets (Hero, icons)
+hashmonkey-gui/   # HMNY desktop GUI (hashmonkey-wallet-gui)
+logo/             # Brand assets
 ```
 
-Build `hashmonkey-core` first, then build `hashmonkey-gui` (see `scripts/`). Packaged Windows/Linux binaries are assembled locally with `scripts/organize-hmny-release.ps1` (not stored in this repo).
+Build `hashmonkey-core` first, then `hashmonkey-gui`. Prebuilt binaries are published via [GitHub Releases](https://github.com/stabner/hashmonkeycoin/releases), not stored in this repository.
 
 ## Coin distribution & supply
 
@@ -71,8 +70,6 @@ cmake -DCMAKE_BUILD_TYPE=Release ../.. && make -j$(nproc) hashmonkeyd hashmonkey
 ./bin/hashmonkey-wallet-cli --testnet --generate-new-wallet ~/hmny-test
 ```
 
-See `scripts/hashmonkeycoin.conf.example` and `scripts/hmny-testnet-bootstrap.sh`.
-
 ## HMNY-specific changes (summary)
 
 - Renamed binaries: `hashmonkeyd`, `hashmonkey-wallet-cli`, `hashmonkey-wallet-gui`
@@ -80,7 +77,7 @@ See `scripts/hashmonkeycoin.conf.example` and `scripts/hmny-testnet-bootstrap.sh
 - GUI defaults to **testnet**; mainnet mining gated behind `--allow-mainnet-mining`
 - Wallet restore height `0` on fresh HMNY chains (no Monero block-height estimator)
 - Solo mining works without waiting for a peer on genesis chains
-- Branding scripts: `scripts/apply_hmny_brand.py`, `scripts/fix_hmny_qml_types.py`
+- HashmonkeyCoin branding; Monero update checks disabled in `hashmonkeyd`
 
 ## License
 

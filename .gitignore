@@ -38,6 +38,15 @@ Thumbs.db
 *.swp
 *.swo
 
+# Personal / ops (keep local only — not in public repo)
+BUILD_STATUS.md
+TESTNET_README.txt
+roadmap.txt
+docs/
+infra/
+scripts/
+release-packages/
+
 # Local deploy paths (optional personal scripts)
 scripts/local/
 scripts/*monkeynas*

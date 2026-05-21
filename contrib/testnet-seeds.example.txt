@@ -1,7 +1,0 @@
-# HMNY testnet seeds (also baked into hashmonkey-core for builds after net_node.inl change):
-#
-#   seednode.hashmonkey.cloud:48080
-#   155.4.209.124:48080
-#
-# Wallets: remote node seednode.hashmonkey.cloud:48081 — bootstrap address empty.
-# Explorer: https://explorer.hashmonkeys.cloud
