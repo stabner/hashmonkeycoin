@@ -105,7 +105,7 @@ You need a **running testnet daemon** first (Part 1), unless you use a **remote 
 If you do not run a daemon locally, you can point the GUI at a public testnet RPC (if offered by the operator):
 
 - Settings → Node → **Remote node**
-- Address: `155.4.209.124:48081` (only if that RPC is open to the internet — the public seed may be localhost-only)
+- Address: `seednode.hashmonkeys.cloud:48081` (only if RPC is open to the internet — default seed is localhost-only)
 - Network: **Testnet**
 
 For most testers, **local daemon + 127.0.0.1:48081** is the reliable setup.
