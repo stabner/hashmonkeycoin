@@ -1,0 +1,60 @@
+# Build outputs
+**/build/
+**/release/
+**/debug/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.exe
+*.dylib
+
+# Duplicate core copies inside GUI tree (use top-level hashmonkey-core/)
+hashmonkey-gui/hashmonkey-core/
+hashmonkey-gui/monero/
+
+# Logs and local artifacts
+*.log
+*.tar.gz
+tags
+TAGS
+cscope.*
+
+# Wallets and secrets — never commit
+*.keys
+*.wallet
+*.seed
+*.mnemonic
+testnet-wallets/
+testnet-bootstrap.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local deploy paths (optional personal scripts)
+scripts/local/
+scripts/*monkeynas*
+scripts/deploy-*.ps1
+scripts/deploy-*.sh
+scripts/clean-*.ps1
+scripts/organize-*.ps1
+scripts/stage-*.ps1
+scripts/package-*.ps1
+scripts/build-win-static-monkeynas.sh
+scripts/patch[0-9].py
+
+# Release bundles (distribute separately)
+release-windows/
+HMNY_monero_fork/
+
+# Local duplicates / archives (do not commit)
+monero/
+hmny-src.tgz
+*.tgz

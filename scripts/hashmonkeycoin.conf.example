@@ -1,0 +1,15 @@
+# HashmonkeyCoin (Monero-format) — example for testnet
+# Copy to ~/.hashmonkeycoin/hashmonkeycoin.conf
+
+testnet=1
+p2p-bind-port=48080
+rpc-bind-port=48081
+no-igd=1
+no-zmq=1
+
+# Optional local RPC auth (wallet / integrations)
+# rpc-login=user:password
+# rpc-restricted-bind-port=48081
+
+# Add seed nodes when available:
+# add-peer=seed.example.com:48080

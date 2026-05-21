@@ -1,0 +1,4 @@
+# Add one host:port per line, then insert into src/p2p/net_node.inl (get_ip_seed_nodes, TESTNET block)
+# or start daemons with: hashmonkeyd --testnet --add-peer=HOST:48080
+#
+# example.seed.example.com:48080
