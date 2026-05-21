@@ -73,15 +73,29 @@ If **`(Min)`** stays **0** but **`(Nout)`** is fine, the chain still syncs; only
 
 ### Linux (Ubuntu 22.04+)
 
+Binaries are built on **Ubuntu 22.04** and link shared libraries (Boost 1.74, etc.). The release tarball includes **`ubuntu/lib/`** so you do **not** need matching system packages on Ubuntu 24.04 or minimal installs.
+
 1. Download **`hmny-testnet-linux-x64.tar.gz`** and extract:
    ```bash
    tar -xzf hmny-testnet-linux-x64.tar.gz
-   cd ubuntu/daemon
-   chmod +x hashmonkeyd
+   cd ubuntu
+   chmod +x run-hashmonkeyd.sh daemon/hashmonkeyd
    ```
-2. Run:
+2. Run (uses bundled libs automatically):
    ```bash
-   ./hashmonkeyd --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
+   ./run-hashmonkeyd.sh --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
+   ```
+   Or manually:
+   ```bash
+   export LD_LIBRARY_PATH="$PWD/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+   ./daemon/hashmonkeyd --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
+   ```
+
+**If you run `./daemon/hashmonkeyd` without `lib/`** and see `libboost_filesystem.so.1.74.0: cannot open shared object file`, use `run-hashmonkeyd.sh` above or install deps on **Ubuntu 22.04 only**:
+   ```bash
+   sudo apt install -y libboost-filesystem1.74.0 libboost-program-options1.74.0 libboost-regex1.74.0 \
+     libboost-serialization1.74.0 libboost-thread1.74.0 libboost-chrono1.74.0 \
+     libssl3 libevent-2.1-7 libzmq5 libsodium23 libunbound8 libhidapi-libusb0 libicu70 libreadline8
    ```
 3. Type **`status`** when the prompt appears — confirm **testnet**, growing **height**, and **`(Nout)`** with **N ≥ 1**.
 
@@ -98,7 +112,7 @@ If **`(Min)`** stays **0** but **`(Nout)`** is fine, the chain still syncs; only
    ```
 5. Confirm bind on all interfaces (default). Optional explicit flags:
    ```bash
-   ./hashmonkeyd --testnet --check-updates=disabled \
+   ./run-hashmonkeyd.sh --testnet --check-updates=disabled \
      --add-peer seednode.hashmonkeys.cloud:48080 \
      --p2p-bind-ip=0.0.0.0 --p2p-bind-port=48080
    ```
@@ -113,7 +127,7 @@ Separate from P2P block sync: **`--public-node`** lets other users attach wallet
 Example (Linux server; **not** for a typical home wallet PC):
 
 ```bash
-./hashmonkeyd --testnet --check-updates=disabled \
+./run-hashmonkeyd.sh --testnet --check-updates=disabled \
   --add-peer seednode.hashmonkeys.cloud:48080 \
   --p2p-bind-ip=0.0.0.0 --p2p-bind-port=48080 \
   --public-node \
@@ -200,6 +214,7 @@ Or ask in community channels for testnet HMNY from the faucet/seed operator.
 | Wallet says “disconnected” | Start `hashmonkeyd --testnet` first; confirm node is `127.0.0.1:48081` and network is **Testnet**. |
 | Daemon on mainnet by mistake | Restart with **`--testnet`**. |
 | Height stays at 0 / no sync | Add peer: `--add-peer seednode.hashmonkeys.cloud:48080`; check **`(Nout)`** in `status`. |
+| Linux: `libboost_*.so.1.74.0` not found | Use `./run-hashmonkeyd.sh` from `ubuntu/` (bundled `lib/`), or re-download the latest linux tarball. |
 | **`(Nout)` is 0** | Firewall blocking outbound, or no internet; allow daemon through firewall; confirm seed hostname resolves. |
 | **`(Min)` is 0** but outbound OK | Normal without port forward. For full peer: forward **48080/TCP**, allow inbound firewall, remove `--hide-my-port`, restart daemon. |
 | Log: “No incoming connections” | Open **48080** on router + firewall toward this host (see full peer steps above). |
@@ -229,7 +244,8 @@ cd windows\wallet-gui
 
 ```bash
 # Linux
-./hashmonkeyd --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
+cd ubuntu
+./run-hashmonkeyd.sh --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
 ```
 
 **Full peer (outgoing + incoming):** same commands + router forward **TCP 48080** + inbound firewall rule. Verify with `status` → `(8out)+(2in)` and `print_cn`.
