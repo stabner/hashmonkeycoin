@@ -36,6 +36,7 @@
 using namespace epee;
 
 #include "core_rpc_server.h"
+#include "hmny_branding.h"
 #include "common/command_line.h"
 #include "common/updates.h"
 #include "common/download.h"
@@ -3230,6 +3231,14 @@ namespace cryptonote
     if (m_core.offline())
     {
       res.status = "Daemon is running offline";
+      return true;
+    }
+
+    if (hmny_is_hashmonkeycoin())
+    {
+      res.status = CORE_RPC_STATUS_OK;
+      res.user_uri = HMNY_RELEASES_URL;
+      res.auto_uri = HMNY_RELEASES_URL;
       return true;
     }
 

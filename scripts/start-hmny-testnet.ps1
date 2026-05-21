@@ -1,12 +1,2 @@
-# Launch HMNY wallet GUI after building hashmonkey-gui (testnet is the default in this fork).
-param(
-    [string]$GuiDir = ""
-)
-if (-not $GuiDir) {
-    $GuiDir = Read-Host "Path to folder containing hashmonkey-wallet-gui.exe and hashmonkeyd.exe"
-}
-$exe = Join-Path $GuiDir "hashmonkey-wallet-gui.exe"
-if (-not (Test-Path $exe)) {
-    Write-Error "Not found: $exe — build hashmonkey-gui first."
-}
-Start-Process -FilePath $exe -WorkingDirectory $GuiDir
+# Copy to HMNY_monero_fork/windows/ — see Desktop release folder.
+# Starts hashmonkeyd on testnet (48080/48081), disables Monero update checks.

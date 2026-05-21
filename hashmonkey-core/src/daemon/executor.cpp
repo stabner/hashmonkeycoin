@@ -30,6 +30,7 @@
 
 #include "daemon/executor.h"
 
+#include "hmny_branding.h"
 #include "cryptonote_config.h"
 #include "version.h"
 
@@ -58,7 +59,7 @@ namespace daemonize
       boost::program_options::variables_map const & vm
     )
   {
-    LOG_PRINT_L0("Monero '" << MONERO_RELEASE_NAME << "' (v" << MONERO_VERSION_FULL << ") Daemonised");
+    LOG_PRINT_L0(hmny_version_string() << " Daemonised");
     return t_daemon{vm, public_rpc_port};
   }
 

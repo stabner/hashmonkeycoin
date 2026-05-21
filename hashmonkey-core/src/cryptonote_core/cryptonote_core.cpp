@@ -37,6 +37,7 @@ using namespace epee;
 
 #include <unordered_set>
 #include "cryptonote_core.h"
+#include "hmny_branding.h"
 #include "common/util.h"
 #include "common/updates.h"
 #include "common/download.h"
@@ -182,8 +183,8 @@ namespace cryptonote
   };
   static const command_line::arg_descriptor<std::string> arg_check_updates = {
     "check-updates"
-  , "Check for new versions of monero: [disabled|notify|download|update]"
-  , "notify"
+  , "Check for new versions (HashmonkeyCoin uses GitHub releases; Monero DNS disabled): [disabled|notify|download|update]"
+  , "disabled"
   };
   static const command_line::arg_descriptor<size_t> arg_max_txpool_weight  = {
     "max-txpool-weight"
@@ -1705,6 +1706,13 @@ namespace cryptonote
   //-----------------------------------------------------------------------------------------------
   bool core::check_updates()
   {
+    // HashmonkeyCoin: never poll MoneroPulse / getmonero.org (use GitHub releases manually).
+    if (hmny_is_hashmonkeycoin())
+    {
+      m_update_available = false;
+      return true;
+    }
+
     static const char software[] = "monero";
 #ifdef BUILD_TAG
     static const char buildtag[] = BOOST_PP_STRINGIZE(BUILD_TAG);

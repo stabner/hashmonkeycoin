@@ -2,7 +2,7 @@
 # Start CPU mining via daemon HTTP /start_mining (not json_rpc).
 set -euo pipefail
 ADDR="${1:-9u5JNEvePkpMn8cL3KnQ5qDS2NBnbigsQUvn1QcmaZPLKWUNJWftgSmWhKNnuQisXDj7nzodaAuYkCuXjiFtNTXrPxbZT4Z}"
-THREADS="${2:-1}"
+THREADS="${2:-4}"
 RPC="${RPC_URL:-http://127.0.0.1:48081}"
 
 cat > /tmp/hmny-start-mining.json <<EOF

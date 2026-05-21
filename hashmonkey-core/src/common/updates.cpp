@@ -26,11 +26,13 @@
 // STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
 // THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include <cstring>
 #include <boost/algorithm/string.hpp>
 #include "misc_log_ex.h"
 #include "util.h"
 #include "dns_utils.h"
 #include "updates.h"
+#include "cryptonote_config.h"
 
 #undef MONERO_DEFAULT_LOG_CATEGORY
 #define MONERO_DEFAULT_LOG_CATEGORY "updates"
@@ -39,6 +41,9 @@ namespace tools
 {
   bool check_updates(const std::string &software, const std::string &buildtag, std::string &version, std::string &hash)
   {
+    if (0 == strcmp(CRYPTONOTE_NAME, "hashmonkeycoin") || software != "monero")
+      return false;
+
     std::vector<std::string> records;
     bool found = false;
 
@@ -102,6 +107,8 @@ namespace tools
 
   std::string get_update_url(const std::string &software, const std::string &subdir, const std::string &buildtag, const std::string &version, bool user)
   {
+    if (0 == strcmp(CRYPTONOTE_NAME, "hashmonkeycoin"))
+      return std::string("https://github.com/stabner/hashmonkeycoin/releases");
     const char *base = user ? "https://downloads.getmonero.org/" : "https://updates.getmonero.org/";
 #ifdef _WIN32
     static const char *extension = strncmp(buildtag.c_str(), "source", 6) ? (strncmp(buildtag.c_str(), "install-", 8) ? ".zip" : ".exe") : ".tar.bz2";
