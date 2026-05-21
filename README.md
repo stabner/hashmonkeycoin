@@ -58,16 +58,16 @@ Emission constants: `hashmonkey-core/src/cryptonote_config.h` (`EMISSION_SPEED_F
 
 ## Quick start (testnet)
 
+**Prebuilt binaries:** [Release v0.2.1-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.1-testnet) (Windows zip + Linux tarball).
+
+**User guides (download → run node → set up GUI):** [TESTNET-GUIDE.md](TESTNET-GUIDE.md)
+
+**Developers (build from source):**
+
 ```bash
-# Build core (Linux example)
 cd hashmonkey-core && mkdir -p build/release && cd build/release
 cmake -DCMAKE_BUILD_TYPE=Release ../.. && make -j$(nproc) hashmonkeyd hashmonkey-wallet-cli
-
-# Run testnet daemon
 ./bin/hashmonkeyd --testnet --detach
-
-# Create wallet (restore height 0 for new chain)
-./bin/hashmonkey-wallet-cli --testnet --generate-new-wallet ~/hmny-test
 ```
 
 ## HMNY-specific changes (summary)
