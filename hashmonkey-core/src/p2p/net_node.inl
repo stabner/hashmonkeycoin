@@ -707,7 +707,6 @@ namespace nodetool
       if (m_nettype == cryptonote::TESTNET)
       {
         full_addrs.insert("seednode.hashmonkeys.cloud:48080");
-        full_addrs.insert("155.4.209.124:48080");
       }
       return full_addrs;
     }
@@ -1828,9 +1827,9 @@ namespace nodetool
         server.m_seed_nodes_initialized = true;
         for (const auto& full_addr : get_seed_nodes(zone))
         {
-          // seeds should have hostname converted to IP already
           MDEBUG("Seed node: " << full_addr);
-          server.m_seed_nodes.push_back(MONERO_UNWRAP(net::get_network_address(full_addr, default_port)));
+          if (!append_net_address(server.m_seed_nodes, full_addr, default_port))
+            MWARNING("Failed to resolve seed node: " << full_addr);
         }
         MDEBUG("Number of seed nodes: " << server.m_seed_nodes.size());
       }

@@ -45,7 +45,8 @@
 #include <QMap>
 
 namespace {
-    static const int DAEMON_START_TIMEOUT_SECONDS = 120;
+    // First testnet sync over the internet can exceed 2 minutes on slow links.
+    static const int DAEMON_START_TIMEOUT_SECONDS = 240;
 }
 
 bool DaemonManager::start(const QString &flags, NetworkType::Type nettype, const QString &dataDir, const QString &bootstrapNodeAddress, bool noSync /* = false*/, bool pruneBlockchain /* = false*/)
@@ -117,8 +118,9 @@ bool DaemonManager::start(const QString &flags, NetworkType::Type nettype, const
     connect(m_daemon.get(), SIGNAL(readyReadStandardOutput()), this, SLOT(printOutput()));
     connect(m_daemon.get(), SIGNAL(readyReadStandardError()), this, SLOT(printError()));
 
-    // Start hashmonkeyd
-    bool started = m_daemon->startDetached(m_monerod, arguments);
+    // Start hashmonkeyd next to the GUI so Windows finds hashmonkeyd.exe and bundled DLLs.
+    const QString workingDirectory = QApplication::applicationDirPath();
+    bool started = m_daemon->startDetached(m_monerod, arguments, workingDirectory);
 
     // add state changed listener
     connect(m_daemon.get(), SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(stateChanged(QProcess::ProcessState)));

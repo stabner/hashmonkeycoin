@@ -33,6 +33,7 @@ import QtQuick.Controls 2.0
 
 import "../js/Wizard.js" as Wizard
 import "../components" as MoneroComponents
+import moneroComponents.NetworkType 1.0
 
 ColumnLayout {
     Layout.fillWidth: true
@@ -41,11 +42,38 @@ ColumnLayout {
     spacing: 10
 
     function save(){
-        persistentSettings.useRemoteNode = remoteNode.checked;
+        persistentSettings.useRemoteNode = remoteNode.checked || quickStartNode.checked;
         if (bootstrapNodeEdit.daemonAddrText == "auto") {
             persistentSettings.bootstrapNodeAddress = "auto";
         } else {
             persistentSettings.bootstrapNodeAddress = bootstrapNodeEdit.getAddress();
+        }
+        if (persistentSettings.nettype === NetworkType.TESTNET)
+            appWindow.applyTestnetNodeDefaults();
+    }
+
+    MoneroComponents.TextPlain {
+        Layout.fillWidth: true
+        font.pixelSize: 14
+        color: MoneroComponents.Style.dimmedFontColor
+        visible: persistentSettings.nettype === NetworkType.TESTNET
+        wrapMode: Text.WordWrap
+        text: qsTr("Use Quick start below, or Full node to download the chain (hashmonkeyd.exe must be in the same folder as this app).") + translationManager.emptyString
+    }
+
+    MoneroComponents.RadioButton {
+        id: quickStartNode
+        Layout.fillWidth: true
+        Layout.topMargin: 4
+        text: qsTr("Quick start — public seed (recommended)") + translationManager.emptyString
+        fontSize: 16
+        checked: appWindow.persistentSettings.useRemoteNode && !isAndroid && !isIOS
+        visible: !isAndroid && !isIOS && persistentSettings.nettype === NetworkType.TESTNET
+        onClicked: {
+            checked = true;
+            localNode.checked = false;
+            remoteNode.checked = false;
+            appWindow.applyTestnetNodeDefaults();
         }
     }
 
@@ -59,6 +87,7 @@ ColumnLayout {
         onClicked: {
             checked = true;
             remoteNode.checked = false;
+            quickStartNode.checked = false;
         }
     }
 
@@ -180,7 +209,11 @@ ColumnLayout {
                 Layout.minimumWidth: 300
                 //labelText: qsTr("Bootstrap node (leave blank if not wanted)") + translationManager.emptyString
 
-                initialAddress: persistentSettings.bootstrapNodeAddress
+                initialAddress: persistentSettings.bootstrapNodeAddress.length > 0
+                    ? persistentSettings.bootstrapNodeAddress
+                    : (persistentSettings.nettype === NetworkType.TESTNET
+                        ? "http://seednode.hashmonkeys.cloud:48081"
+                        : "")
             }
         }
     }
@@ -195,6 +228,7 @@ ColumnLayout {
         onClicked: {
             checked = true
             localNode.checked = false
+            quickStartNode.checked = false
         }
     }
 

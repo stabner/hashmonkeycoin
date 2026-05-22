@@ -43,6 +43,7 @@ Rectangle {
     property string viewName: "wizardModeSelection1"
     property bool portable: persistentSettings.portable
     property bool simpleModeAvailable: !isTails && appWindow.persistentSettings.nettype == 0 && !isAndroid
+    property bool testnetBootstrapAvailable: !isTails && appWindow.persistentSettings.nettype == NetworkType.TESTNET && !isAndroid
 
     function applyWalletMode(mode, wizardState) {
         if (!persistentSettings.setPortable(portable)) {
@@ -89,7 +90,7 @@ Rectangle {
                 Layout.fillWidth: true
                 font.pixelSize: 14
                 color: MoneroComponents.Style.dimmedFontColor
-                text: qsTr("Public HMNY testnet is live — choose Testnet below. Simple modes only work on mainnet.") + translationManager.emptyString
+                text: qsTr("Public HMNY testnet — choose Testnet, then Quick start or Full node (download chain).") + translationManager.emptyString
                 wrapMode: Text.WordWrap
             }
 
@@ -110,6 +111,7 @@ Rectangle {
                         persistentSettings.nettype = NetworkType.STAGENET
                     } else if (item === "testnet") {
                         persistentSettings.nettype = NetworkType.TESTNET
+                        appWindow.applyTestnetNodeDefaults()
                     }
                     appWindow.disconnectRemoteNode()
                 }
@@ -125,8 +127,45 @@ Rectangle {
             }
 
             WizardMenuItem {
+                Layout.topMargin: 12
+                headerText: qsTr("Testnet — quick start (recommended)") + translationManager.emptyString
+                bodyText: qsTr("Wallet connects to the public seed (RPC port 48081). Syncs in minutes with no blockchain download. Best for new testers.") + translationManager.emptyString
+                imageIcon: "qrc:///images/hmny-remote-node.png"
+
+                onMenuClicked: {
+                    appWindow.persistentSettings.nettype = NetworkType.TESTNET;
+                    appWindow.persistentSettings.useRemoteNode = true;
+                    appWindow.applyTestnetNodeDefaults();
+                    applyWalletMode(2, "wizardHome");
+                }
+            }
+
+            WizardMenuItem {
+                headerText: qsTr("Testnet — full node") + translationManager.emptyString
+                bodyText: qsTr("Runs hashmonkeyd on your PC, downloads the testnet chain, and uses the public seed for P2P and bootstrap. Required for mining.") + translationManager.emptyString
+                imageIcon: "qrc:///images/hmny-local-node-full.png"
+
+                onMenuClicked: {
+                    appWindow.persistentSettings.pruneBlockchain = true;
+                    appWindow.persistentSettings.nettype = NetworkType.TESTNET;
+                    appWindow.persistentSettings.useRemoteNode = false;
+                    appWindow.applyTestnetNodeDefaults();
+                    applyWalletMode(2, "wizardHome");
+                }
+            }
+
+            Rectangle {
+                Layout.preferredHeight: 1
+                Layout.topMargin: 8
+                Layout.bottomMargin: 8
+                Layout.fillWidth: true
+                color: MoneroComponents.Style.dividerColor
+                opacity: MoneroComponents.Style.dividerOpacity
+            }
+
+            WizardMenuItem {
                 opacity: simpleModeAvailable ? 1.0 : 0.5
-                Layout.topMargin: 20
+                Layout.topMargin: 12
                 headerText: qsTr("Simple mode") + translationManager.emptyString
                 bodyText: {
                     if (isTails) {
@@ -159,25 +198,31 @@ Rectangle {
             }
 
             WizardMenuItem {
-                opacity: simpleModeAvailable ? 1.0 : 0.5
+                opacity: (simpleModeAvailable || testnetBootstrapAvailable) ? 1.0 : 0.5
                 headerText: qsTr("Simple mode") + " (bootstrap)" + translationManager.emptyString
                 bodyText: {
                     if (isTails) {
                         return qsTr("Not available on Tails.") + translationManager.emptyString;
+                    } else if (testnetBootstrapAvailable) {
+                        return qsTr("Downloads the testnet chain using the public seed as bootstrap, then keeps syncing locally.") + translationManager.emptyString;
+                    } else if (appWindow.persistentSettings.nettype == 0) {
+                        return qsTr("Easy access to sending, receiving and basic functionality. The blockchain is downloaded to your computer.") + translationManager.emptyString;
                     } else {
-                        if (appWindow.persistentSettings.nettype == 0) {
-                            return qsTr("Easy access to sending, receiving and basic functionality. The blockchain is downloaded to your computer.") + translationManager.emptyString;
-                        } else {
-                            return qsTr("Available on mainnet.") + translationManager.emptyString;
-                        }
+                        return qsTr("Available on mainnet.") + translationManager.emptyString;
                     }
                 }
                 imageIcon: "qrc:///images/hmny-local-node.png"
 
                 onMenuClicked: {
-                    if (simpleModeAvailable) {
+                    if (testnetBootstrapAvailable) {
                         appWindow.persistentSettings.pruneBlockchain = true;
-                        applyWalletMode(1, 'wizardModeBootstrap');
+                        appWindow.persistentSettings.nettype = NetworkType.TESTNET;
+                        appWindow.persistentSettings.useRemoteNode = false;
+                        appWindow.applyTestnetNodeDefaults();
+                        applyWalletMode(1, "wizardModeBootstrap");
+                    } else if (simpleModeAvailable) {
+                        appWindow.persistentSettings.pruneBlockchain = true;
+                        applyWalletMode(1, "wizardModeBootstrap");
                     }
                 }
             }
@@ -192,15 +237,16 @@ Rectangle {
             }
 
             WizardMenuItem {
-                headerText: qsTr("Advanced mode") + translationManager.emptyString
-                bodyText: qsTr("Includes extra features like mining and message verification. The blockchain is downloaded to your computer.") + translationManager.emptyString
+                headerText: qsTr("Advanced mode (same as full node)") + translationManager.emptyString
+                bodyText: qsTr("Full local node plus mining and message verification. Same sync defaults as Testnet — full node.") + translationManager.emptyString
                 imageIcon: "qrc:///images/hmny-local-node-full.png"
 
                 onMenuClicked: {
                     appWindow.persistentSettings.pruneBlockchain = true;
-                    // HMNY: public testnet is active; default new setups to testnet (saved settings may still say mainnet).
                     appWindow.persistentSettings.nettype = NetworkType.TESTNET;
-                    applyWalletMode(2, 'wizardHome');
+                    appWindow.persistentSettings.useRemoteNode = false;
+                    appWindow.applyTestnetNodeDefaults();
+                    applyWalletMode(2, "wizardHome");
                 }
             }
 

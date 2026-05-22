@@ -75,6 +75,8 @@ Rectangle {
                 }
                 onNextClicked: {
                     daemonSettings.save();
+                    if (!persistentSettings.useRemoteNode)
+                        appWindow.ensureTestnetDaemonRunning();
                     wizardStateView.state = "wizardRestoreWallet4";
                 }
             }

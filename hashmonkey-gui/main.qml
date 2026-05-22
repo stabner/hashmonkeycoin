@@ -779,15 +779,86 @@ ApplicationWindow {
             currentWallet.refreshHeightAsync();
     }
 
+    // Public HMNY testnet (seed hostname only; no hardcoded IPs).
+    function defaultTestnetDaemonFlags() {
+        return "--add-priority-node=seednode.hashmonkeys.cloud:48080 "
+            + "--add-peer=seednode.hashmonkeys.cloud:48080 "
+            + "--out-peers=12 --in-peers=32";
+    }
+
+    function defaultTestnetBootstrapAddress() {
+        return "http://seednode.hashmonkeys.cloud:48081";
+    }
+
+    function applyTestnetNodeDefaults() {
+        if (persistentSettings.nettype !== NetworkType.TESTNET)
+            return;
+        if (!persistentSettings.daemonFlags || persistentSettings.daemonFlags.length === 0)
+            persistentSettings.daemonFlags = defaultTestnetDaemonFlags();
+        if (!persistentSettings.bootstrapNodeAddress || persistentSettings.bootstrapNodeAddress.length === 0)
+            persistentSettings.bootstrapNodeAddress = defaultTestnetBootstrapAddress();
+        try {
+            const remoteNodes = JSON.parse(persistentSettings.remoteNodesSerialized);
+            if (!remoteNodes.nodes || remoteNodes.nodes.length === 0) {
+                persistentSettings.remoteNodesSerialized = JSON.stringify({
+                    selected: 0,
+                    nodes: [{
+                        address: "seednode.hashmonkeys.cloud:48081",
+                        username: "",
+                        password: "",
+                        trusted: true
+                    }]
+                });
+            }
+        } catch (e) {
+            console.error("applyTestnetNodeDefaults: remoteNodesSerialized", e);
+        }
+        remoteNodesModel.initialize();
+    }
+
+    // Start local testnet daemon during wizard (before wallet opens) so first connect is faster.
+    function ensureTestnetDaemonRunning() {
+        if (persistentSettings.nettype !== NetworkType.TESTNET || persistentSettings.useRemoteNode)
+            return;
+        applyTestnetNodeDefaults();
+        if (daemonStartStopInProgress)
+            return;
+        daemonManager.runningAsync(persistentSettings.nettype, persistentSettings.blockchainDataDir, function(running) {
+            if (!running)
+                startDaemon(persistentSettings.daemonFlags);
+        });
+    }
+
+    function testnetBootstrapAddress() {
+        var addr = persistentSettings.bootstrapNodeAddress;
+        if (addr === "auto" || !addr || addr.length === 0)
+            return defaultTestnetBootstrapAddress();
+        return addr;
+    }
+
     function startDaemon(flags){
         daemonStartStopInProgress = 1;
 
-        // Pause refresh while starting daemon
-        currentWallet.pauseRefresh();
+        if (typeof currentWallet !== "undefined" && currentWallet !== null)
+            currentWallet.pauseRefresh();
 
         const noSync = appWindow.walletMode === 0;
-        const bootstrapNodeAddress = persistentSettings.walletMode < 2 ? "auto" : persistentSettings.bootstrapNodeAddress
-        daemonManager.start(flags, persistentSettings.nettype, persistentSettings.blockchainDataDir, bootstrapNodeAddress, noSync, persistentSettings.pruneBlockchain);
+        var effectiveFlags = flags;
+        if (!effectiveFlags || effectiveFlags.length === 0)
+            effectiveFlags = persistentSettings.daemonFlags;
+        if ((!effectiveFlags || effectiveFlags.length === 0) && persistentSettings.nettype === NetworkType.TESTNET)
+            effectiveFlags = defaultTestnetDaemonFlags();
+
+        var bootstrapNodeAddress = "";
+        if (persistentSettings.nettype === NetworkType.TESTNET && !persistentSettings.useRemoteNode) {
+            bootstrapNodeAddress = testnetBootstrapAddress();
+        } else if (persistentSettings.walletMode < 2) {
+            bootstrapNodeAddress = "auto";
+        } else if (persistentSettings.bootstrapNodeAddress && persistentSettings.bootstrapNodeAddress.length > 0) {
+            bootstrapNodeAddress = persistentSettings.bootstrapNodeAddress;
+        }
+
+        daemonManager.start(effectiveFlags, persistentSettings.nettype, persistentSettings.blockchainDataDir, bootstrapNodeAddress, noSync, persistentSettings.pruneBlockchain);
     }
 
     function stopDaemon(callback, splash){
@@ -1412,6 +1483,9 @@ ApplicationWindow {
                 appWindow.qrScannerEnabled = false;
             }
         } else console.log("qrScannerEnabled disabled");
+
+        if (persistentSettings.nettype === NetworkType.TESTNET)
+            applyTestnetNodeDefaults();
 
         if(!walletsFound()) {
             wizard.wizardState = "wizardLanguage";

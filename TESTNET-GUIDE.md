@@ -1,255 +1,171 @@
-# HashmonkeyCoin testnet — user setup guide
+# HashmonkeyCoin testnet — setup guide
 
-Public testnet only. **Always use testnet** until mainnet is announced.
+Public testnet only. **Always choose Testnet** in the wallet until mainnet is announced.
 
-| Item | Value |
-|------|--------|
-| Download | [GitHub Release v0.2.1-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.1-testnet) |
-| Seed node | `seednode.hashmonkeys.cloud:48080` |
-| P2P port | **48080** |
-| RPC port | **48081** |
-| Block explorer | https://explorer.hashmonkeys.cloud |
+| | |
+|--|--|
+| **Download** | [GitHub Releases](https://github.com/stabner/hashmonkeycoin/releases) — use the latest **`v0.2.4-testnet`** (or newer testnet tag) |
+| **Seed (P2P)** | `seednode.hashmonkeys.cloud:48080` |
+| **Seed (wallet RPC)** | `seednode.hashmonkeys.cloud:48081` |
+| **Explorer** | https://explorer.hashmonkeys.cloud |
 
-Verify downloads with `SHA256SUMS.txt` on the release page.
+Verify files with **`SHA256SUMS.txt`** on the release page.
 
 ---
 
-## Part 1 — Run a node (daemon)
+## Before you start (upgrading from an older testnet build)
 
-The node (`hashmonkeyd`) stores the blockchain and talks to other peers. The wallet connects to it later.
+Current testnet follows **mainnet-style hardforks** (RandomX from block **12**). Old blockchain data will not sync.
 
-### How P2P sync works (outgoing vs incoming)
+1. Close `hashmonkeyd.exe` and `hashmonkey-wallet-gui.exe`.
+2. Delete the chain folder (wallet files are usually elsewhere):
+   - **Windows:** Win+R → `%ProgramData%\hashmonkeycoin\testnet` → delete everything inside.
+   - **Linux:** delete `~/.hashmonkeycoin/testnet/`
+3. Install binaries from the latest testnet release and continue below.
 
-| Direction | What it does | What you need |
-|-----------|----------------|---------------|
-| **Outgoing** | Your node connects *to* other peers (seed, peer list) and downloads blocks | Works from most home PCs — use `--add-peer` (below) |
-| **Incoming** | Other peers connect *to* your node and share blocks with you | Router **port forward** TCP **48080** to this PC + allow inbound **48080** in the firewall |
+---
 
-For **wallet use and syncing the chain**, outgoing alone is enough. For a **full peer** that helps the network and can accept connections from others, set up **both**.
+## Easiest path — wallet only (recommended for new users)
 
-After the node is running, type **`status`**. A healthy node looks like:
+No manual daemon. No blockchain download on your PC.
 
-```text
-Height: …/… (…%) on testnet, …, …(8out)+2(in) connections
+1. Download **`hmny-testnet-windows-x64.zip`** (or the Linux tarball) and extract it.
+2. Open the **`windows\wallet-gui`** folder (Linux: `ubuntu/wallet-gui` if present, else use daemon path in the zip README).
+3. Run **`hashmonkey-wallet-gui.exe`**.
+4. Wizard:
+   - **Language** → your choice  
+   - **Network:** **Testnet**  
+   - **Testnet — quick start (recommended)**  
+   - Create a wallet (use restore height **0** for a brand-new wallet)  
+5. Wait until the bottom bar shows **connected** / synchronized (a few minutes is normal).
+
+The wallet uses the public seed RPC at **`seednode.hashmonkeys.cloud:48081`**.
+
+---
+
+## Full node path (download the chain on your PC)
+
+Use this if you want your own `hashmonkeyd`, mining, or maximum privacy.
+
+1. Extract the release zip.
+2. Put **`hashmonkeyd.exe`** and **`hashmonkey-wallet-gui.exe`** in the **same** folder (`windows\wallet-gui`).
+3. Run **`hashmonkey-wallet-gui.exe`**.
+4. Wizard: **Testnet** → **Testnet — full node**.
+5. On the daemon step, leave **Start a node automatically** enabled (default).
+6. Wait until status shows **Synchronized** (first sync can take a while).
+
+The GUI starts the daemon with public peers and bootstrap to the seed. Your wallet talks to **`127.0.0.1:48081`** on your PC.
+
+### Windows — start the daemon manually (optional)
+
+Open PowerShell in `windows\wallet-gui`:
+
+```powershell
+.\hashmonkeyd.exe --testnet --check-updates=disabled
 ```
 
-- **`(Nout)`** — outgoing peers (you want **≥ 1**, often 8–12).
-- **`(Min)`** — incoming peers (**0** is normal behind NAT with no port forward; **≥ 1** means your node is reachable on the internet).
+v0.2.4+ builds already use `seednode.hashmonkeys.cloud:48080`. Optional extra peer:
 
-Use **`print_cn`** in the daemon window to list each connection and whether it is incoming or outgoing.
+```powershell
+.\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
+```
 
----
+In the daemon window, type **`status`**. You want **testnet**, a growing **height**, and **`(Nout)` ≥ 1**.
 
-### Windows
+**Chain data:** `%ProgramData%\hashmonkeycoin\testnet\`
 
-1. Download **`hmny-testnet-windows-x64.zip`** from the release page and extract it (e.g. to `Desktop\HMNY`).
-2. Open **PowerShell** in **`windows\wallet-gui`** (daemon and GUI live in the same folder).
-3. Start the daemon (copy/paste this one line):
-   ```powershell
-   .\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
-   ```
-4. Wait until you see **“You are now synchronized with the network”** (may take a minute on first sync).
-5. In the daemon window, type **`status`** and press Enter. You should see **testnet**, a **height** number, and **`(Nout)`** with **N ≥ 1**.
-
-**Important:** Without `--testnet`, the daemon runs **mainnet** (wrong ports and chain). Always include `--testnet`.
-
-**Data folder:** `C:\ProgramData\hashmonkeycoin\testnet\`
-
-**Firewall (outgoing):** allow `hashmonkeyd.exe` on private networks if Windows asks.
-
-#### Full peer on Windows (incoming + outgoing)
-
-1. Use the same start command as above (it already listens on P2P port **48080**).
-2. **Do not** add `--hide-my-port` (that stops your node from advertising itself to others).
-3. **Router:** forward **TCP 48080** from your public IP to this PC’s LAN IP (same port **48080**).
-4. **Windows Firewall — inbound rule** (PowerShell as Administrator):
-   ```powershell
-   New-NetFirewallRule -DisplayName "HMNY testnet P2P" -Direction Inbound -Protocol TCP -LocalPort 48080 -Action Allow
-   ```
-5. Restart the daemon if it was already running, wait a few minutes, then **`status`** again — look for **`(Min)`** with **M ≥ 1**.
-6. Optional check: type **`print_cn`** — you should see lines marked as incoming connections.
-
-If **`(Min)`** stays **0** but **`(Nout)`** is fine, the chain still syncs; only inbound reachability is missing (double-check port forward and firewall).
-
-### Linux (Ubuntu 22.04+)
-
-Binaries are built on **Ubuntu 22.04** and link shared libraries (Boost 1.74, etc.). The release tarball includes **`ubuntu/lib/`** so you do **not** need matching system packages on Ubuntu 24.04 or minimal installs.
-
-1. Download **`hmny-testnet-linux-x64.tar.gz`** and extract:
-   ```bash
-   tar -xzf hmny-testnet-linux-x64.tar.gz
-   cd ubuntu
-   chmod +x run-hashmonkeyd.sh daemon/hashmonkeyd
-   ```
-2. Run (uses bundled libs automatically):
-   ```bash
-   ./run-hashmonkeyd.sh --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
-   ```
-   Or manually:
-   ```bash
-   export LD_LIBRARY_PATH="$PWD/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-   ./daemon/hashmonkeyd --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
-   ```
-
-**If you run `./daemon/hashmonkeyd` without `lib/`** and see `libboost_filesystem.so.1.74.0: cannot open shared object file`, use `run-hashmonkeyd.sh` above or install deps on **Ubuntu 22.04 only**:
-   ```bash
-   sudo apt install -y libboost-filesystem1.74.0 libboost-program-options1.74.0 libboost-regex1.74.0 \
-     libboost-serialization1.74.0 libboost-thread1.74.0 libboost-chrono1.74.0 \
-     libssl3 libevent-2.1-7 libzmq5 libsodium23 libunbound8 libhidapi-libusb0 libicu70 libreadline8
-   ```
-3. Type **`status`** when the prompt appears — confirm **testnet**, growing **height**, and **`(Nout)`** with **N ≥ 1**.
-
-**Data folder:** `~/.hashmonkeycoin/testnet/`
-
-#### Full peer on Linux (incoming + outgoing)
-
-1. Same daemon command as above.
-2. **Do not** use `--hide-my-port`.
-3. **Router:** forward **TCP 48080** → this machine’s LAN IP:48080.
-4. **Host firewall** (if `ufw` is enabled):
-   ```bash
-   sudo ufw allow 48080/tcp comment 'HMNY testnet P2P'
-   ```
-5. Confirm bind on all interfaces (default). Optional explicit flags:
-   ```bash
-   ./run-hashmonkeyd.sh --testnet --check-updates=disabled \
-     --add-peer seednode.hashmonkeys.cloud:48080 \
-     --p2p-bind-ip=0.0.0.0 --p2p-bind-port=48080
-   ```
-6. After a few minutes: **`status`** should show **`(Min)`** ≥ 1 when reachable; **`print_cn`** lists incoming peers.
-
----
-
-### Optional: public RPC node (`--public-node`)
-
-Separate from P2P block sync: **`--public-node`** lets other users attach wallets to your RPC (restricted mode) and advertises that over P2P. Only use this if you intend to host a remote node for others.
-
-Example (Linux server; **not** for a typical home wallet PC):
+### Linux — start the daemon manually (optional)
 
 ```bash
-./run-hashmonkeyd.sh --testnet --check-updates=disabled \
-  --add-peer seednode.hashmonkeys.cloud:48080 \
-  --p2p-bind-ip=0.0.0.0 --p2p-bind-port=48080 \
-  --public-node \
-  --rpc-bind-ip=0.0.0.0 --rpc-bind-port=48081 --confirm-external-bind
+tar -xzf hmny-testnet-linux-x64.tar.gz
+cd ubuntu
+chmod +x run-hashmonkeyd.sh daemon/hashmonkeyd
+./run-hashmonkeyd.sh --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
 ```
 
-Also forward **48081** if RPC should be reachable from the internet. Keep RPC on **localhost** (`127.0.0.1:48081`) for normal wallet use — safer.
+**Chain data:** `~/.hashmonkeycoin/testnet/`
 
 ---
 
-### Check the node is working
+## Ports (do not mix these up)
 
-- Daemon shows **testnet** in `status`.
-- **`(Nout)` ≥ 1** — node is talking to the network (required).
-- **`(Min)` ≥ 1** — node accepts inbound P2P (full peer; optional at home).
-- Height catches up to the explorer: https://explorer.hashmonkeys.cloud
-- **`print_cn`** shows a mix of incoming/outgoing when fully peered.
-- RPC: default install binds to **localhost only** (`127.0.0.1:48081`) — good for local GUI; do not expose RPC unless you know the risks.
+| Port | Purpose | Wallet GUI? |
+|------|---------|-------------|
+| **48080** | P2P between daemons | **No** |
+| **48081** | RPC (wallet ↔ daemon) | **Yes** |
 
-### Stop the node
-
-- In the daemon window: type **`exit`** and press Enter, or close the window.
+- Local wallet with your own daemon: **`127.0.0.1:48081`**
+- Remote wallet (quick start): **`seednode.hashmonkeys.cloud:48081`**
 
 ---
 
-## Part 2 — GUI wallet setup
+## Mining on the pool
 
-You need a **running testnet daemon** first (Part 1), unless you use a **remote node** (advanced).
+1. Use a **testnet** wallet address from the **Receive** page.
+2. Point your miner at the pool host and port listed on [HashMonkeys.cloud](https://hashmonkeys.cloud) for HMNY testnet.
+3. Pool dashboard **“Total paid”** means the pool **sent** a payout transaction. Your wallet only shows coins after:
+   - the tx is **included in a block**, and  
+   - about **10 blocks** (~20 minutes at ~2 min/block) for **spendable** balance.
 
-### Windows
+Check **History** in the GUI. If the pool gives a transaction ID, look it up on the explorer.
 
-1. Make sure **`hashmonkeyd.exe`** is running with **`--testnet`** from **`windows\wallet-gui`** (see Part 1).
-2. Start the wallet in the **same folder** (daemon must already be running):
-   - `.\hashmonkey-wallet-gui.exe`
-3. **First time — create a wallet**
-   - Choose language → **Advanced mode** (simple mode may require mainnet).
-   - Network: select **Testnet**.
-   - Create a new wallet, set a strong password, write down the **25-word seed** offline.
-   - Restore height: use **0** for a brand-new testnet wallet, or ask the community for the current height if restoring later.
-4. **Connect to your local node**
-   - Settings → **Node** (or wizard remote node step).
-   - **Local node** (not remote).
-   - Address: **`127.0.0.1:48081`**
-   - Network: **Testnet**
-5. Wait until the wallet shows **Synchronized** / connected (bottom status).
+### When are testnet coins spendable?
 
-### Linux
+| How you got coins | Shows in wallet | Spendable (can send) |
+|-------------------|-----------------|----------------------|
+| **Pool payout** | ~1 block after confirmation | ~**10 blocks** later |
+| **Mined block reward** | ~1 block | ~**60 blocks** later (~2 hours) |
 
-1. Run **`hashmonkeyd --testnet`** as in Part 1 (keep it running).
-2. In another terminal:
-   ```bash
-   chmod +x ../wallet-gui/hashmonkey-wallet-gui
-   ../wallet-gui/hashmonkey-wallet-gui
-   ```
-3. Same wizard steps: **Testnet**, **Advanced mode**, local node **`127.0.0.1:48081`**.
+Testnet coins have **no real value**.
 
-### Using a remote node (optional)
+---
 
-If you do not run a daemon locally, you can point the GUI at a public testnet RPC (if offered by the operator):
+## Seed operator checklist (public testnet)
 
-- Settings → Node → **Remote node**
-- Address: `seednode.hashmonkeys.cloud:48081` (only if RPC is open to the internet — default seed is localhost-only)
-- Network: **Testnet**
+Remote users connect **out** to **`seednode.hashmonkeys.cloud`**. They do not need your home LAN address.
 
-For most testers, **local daemon + 127.0.0.1:48081** is the reliable setup.
+1. **Router:** forward **TCP 48080** (P2P) and **TCP 48081** (RPC) to the machine running the seed.
+2. **DNS:** `seednode.hashmonkeys.cloud` → your public IP (A record).
+3. Run the seed with **testnet**, **`--public-node`**, and **restricted RPC** on **48081** (see repo script `scripts/hmny-testnet-public-node.sh`).
+4. **Test from outside your LAN:**  
+   `Test-NetConnection seednode.hashmonkeys.cloud -Port 48080`  
+   (or an online port checker) — must show **open**, not filtered.
 
-### Receive testnet coins (mining)
+---
 
-Testnet coins have **no real value**. To get coins for testing:
+## Troubleshooting
 
-1. Copy your wallet **address** from the Receive page.
-2. On the machine running the daemon, start mining to that address (example):
-   ```text
-   start_mining YOUR_ADDRESS 2
-   ```
-   (In the `hashmonkeyd` window, or via RPC — community docs may add a script.)
-
-Or ask in community channels for testnet HMNY from the faucet/seed operator.
-
-### Common issues
-
-| Problem | Fix |
-|---------|-----|
-| Wallet says “disconnected” | Start `hashmonkeyd --testnet` first; confirm node is `127.0.0.1:48081` and network is **Testnet**. |
-| Daemon on mainnet by mistake | Restart with **`--testnet`**. |
-| Height stays at 0 / no sync | Add peer: `--add-peer seednode.hashmonkeys.cloud:48080`; check **`(Nout)`** in `status`. |
-| Linux: `libboost_*.so.1.74.0` not found | Use `./run-hashmonkeyd.sh` from `ubuntu/` (bundled `lib/`), or re-download the latest linux tarball. |
-| **`(Nout)` is 0** | Firewall blocking outbound, or no internet; allow daemon through firewall; confirm seed hostname resolves. |
-| **`(Min)` is 0** but outbound OK | Normal without port forward. For full peer: forward **48080/TCP**, allow inbound firewall, remove `--hide-my-port`, restart daemon. |
-| Log: “No incoming connections” | Open **48080** on router + firewall toward this host (see full peer steps above). |
-| “Monero” in old log lines | Re-download **v0.2.1-testnet** release binaries (newer builds say HashmonkeyCoin). |
-| Windows blocks zip | Extract on PC; Defender may flag mining tools — core daemon/GUI from release are intended for use. |
-
-### What testnet is for
-
-- Testing wallets, sends, and mining  
-- Trying the block explorer and seed node  
-- **Not** real money — do not use testnet keys on other coins  
-
-Mainnet is **not launched** yet. Do not expect mainnet seeds or value.
+| Problem | What to do |
+|---------|------------|
+| Wallet **disconnected** | Network = **Testnet**. Quick start: `seednode.hashmonkeys.cloud:48081`. Full node: start `hashmonkeyd --testnet`, node = `127.0.0.1:48081`. |
+| Used port **48080** in the wallet | Wrong port — wallet needs **48081**. |
+| Balance **0** after pool “paid” | Open **History**; wait for tx in a block + ~10 blocks; stay **connected** and **synced**. |
+| Height **0** / no sync | Daemon needs `--testnet` and peers; check **`(Nout) ≥ 1`** in `status`. |
+| Explorer shows **no peers** | Normal on public RPC — P2P is hidden there. Check your own `status` / `print_cn`. |
+| **`(Min)` is 0** | Normal at home without port forward; outbound sync still works. |
+| Same home network as seed, sync fails | Public hostname can fail from inside the same LAN (router hairpin). Try **mobile data** or ask the operator for a LAN hostname. |
+| Linux `libboost` missing | Use `./run-hashmonkeyd.sh` from the `ubuntu/` folder (bundled `lib/`). |
+| Wrong chain / weird heights | Delete testnet chain folder (see top), re-sync with latest release. |
 
 ---
 
 ## Quick reference
 
-**Sync + wallet (outgoing peers only):**
+**Wallet only:** run GUI → Testnet → **Quick start** → create wallet.
+
+**Full node:**
 
 ```powershell
-# Windows
 cd windows\wallet-gui
-.\hashmonkeyd.exe --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
-# then: .\hashmonkey-wallet-gui.exe
+.\hashmonkeyd.exe --testnet --check-updates=disabled
+.\hashmonkey-wallet-gui.exe
 ```
 
 ```bash
-# Linux
 cd ubuntu
 ./run-hashmonkeyd.sh --testnet --check-updates=disabled --add-peer seednode.hashmonkeys.cloud:48080
 ```
 
-**Full peer (outgoing + incoming):** same commands + router forward **TCP 48080** + inbound firewall rule. Verify with `status` → `(8out)+(2in)` and `print_cn`.
+**GUI node (local daemon):** `127.0.0.1:48081` · **Network:** Testnet
 
-**GUI node setting:** `127.0.0.1:48081` · **Network:** Testnet
-
-Questions / issues: [hashmonkeycoin repository](https://github.com/stabner/hashmonkeycoin/issues)
+Questions: [GitHub Issues](https://github.com/stabner/hashmonkeycoin/issues)

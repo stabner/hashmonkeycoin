@@ -50,7 +50,9 @@ HMNY uses the same **Monero-style emission curve** as the upstream core (smooth 
 
 ### Testnet vs mainnet coins
 
-**Testnet HMNY has no monetary value** and uses separate network IDs, ports, and genesis nonce. Testnet is for development, wallet testing, and public trials only. Mainnet is **not launched yet** (`--allow-mainnet-mining` is required until public launch).
+**Testnet HMNY has no monetary value** and uses separate network IDs, ports, and genesis nonce. **Consensus rules mirror mainnet** (same hardfork heights; RandomX from block 12). Testnet is for development, wallet testing, and public trials only. Mainnet is **not launched yet** (`--allow-mainnet-mining` is required until public launch).
+
+After a hardfork-schedule upgrade, wipe local testnet data (`~/.hashmonkeycoin/testnet` on Linux, `ProgramData\hashmonkeycoin\testnet` on Windows) and sync again from the seed.
 
 ### Reference (source of truth)
 
@@ -58,7 +60,7 @@ Emission constants: `hashmonkey-core/src/cryptonote_config.h` (`EMISSION_SPEED_F
 
 ## Quick start (testnet)
 
-**Prebuilt binaries:** [Release v0.2.1-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.1-testnet) (Windows zip + Linux tarball).
+**Prebuilt binaries:** [Release v0.2.4-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.4-testnet) (Windows zip + Linux tarball). See [TESTNET-GUIDE.md](TESTNET-GUIDE.md). Delete `C:\ProgramData\hashmonkeycoin\testnet` before re-sync after upgrading.
 
 **User guides (download → run node → set up GUI):** [TESTNET-GUIDE.md](TESTNET-GUIDE.md)
 

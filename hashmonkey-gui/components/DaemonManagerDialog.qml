@@ -47,6 +47,8 @@ Window {
     function open() {
         show()
         countDown = 10;
+        // Start local node immediately (was: wait 10s). Wallet stays disconnected until daemon is up.
+        appWindow.startDaemon(persistentSettings.daemonFlags);
         timer.start();
     }
 
@@ -87,16 +89,14 @@ Window {
                     countDown--;
                     if(countDown < 0){
                         running = false;
-                        // Start daemon
                         root.close()
-                        appWindow.startDaemon(persistentSettings.daemonFlags);
                         root.started();
                     }
                 }
             }
 
             MoneroComponents.TextPlain {
-                text: qsTr("Starting local node in %1 seconds").arg(countDown) + translationManager.emptyString;
+                text: qsTr("Starting local node (waiting %1 s)").arg(countDown) + translationManager.emptyString;
                 font.pixelSize: 18
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
