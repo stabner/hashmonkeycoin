@@ -12,17 +12,18 @@ HashmonkeyCoin is a Monero-based privacy coin fork with HMNY branding, custom ne
 | Address prefix | `9…` (mainnet) | testnet prefix in `cryptonote_config.h` |
 
 - **Mainnet** is prepared but **not launched**: no public seeds; mining requires `--allow-mainnet-mining`.
-- **Testnet** is for development and public testing. Configure seed nodes in `src/p2p/net_node.inl` or use `--add-peer` at deploy time.
+- **Testnet** is for public testing. Public seed: `seednode.hashmonkeys.cloud` (P2P **48080**, RPC **48081**). See [TESTNET-GUIDE.md](TESTNET-GUIDE.md).
 
 ## Repository layout
 
 ```
-hashmonkey-core/  # HMNY core (hashmonkeyd, wallets, blockchain tools)
-hashmonkey-gui/   # HMNY desktop GUI (hashmonkey-wallet-gui)
-logo/             # Brand assets
+hashmonkey-core/  # HMNY core (hashmonkeyd, wallets) — hashmonkey-core/README-HMNY.md
+hashmonkey-gui/   # HMNY desktop GUI — hashmonkey-gui/README-HMNY.md
 ```
 
-Build `hashmonkey-core` first, then `hashmonkey-gui`. Prebuilt binaries are published via [GitHub Releases](https://github.com/stabner/hashmonkeycoin/releases), not stored in this repository.
+**Fork notice:** HashmonkeyCoin is based on the [Monero Project](https://www.getmonero.org/). Upstream copyright and license terms in source files are retained.
+
+**Build order:** `hashmonkey-core` first, then `hashmonkey-gui`. **Most users** should use [GitHub Releases](https://github.com/stabner/hashmonkeycoin/releases) instead of compiling. See **[TESTNET-GUIDE.md](TESTNET-GUIDE.md)** for download, testnet, and build instructions.
 
 ## Coin distribution & supply
 
@@ -50,9 +51,9 @@ HMNY uses the same **Monero-style emission curve** as the upstream core (smooth 
 
 ### Testnet vs mainnet coins
 
-**Testnet HMNY has no monetary value** and uses separate network IDs, ports, and genesis nonce. **Consensus rules mirror mainnet** (same hardfork heights; RandomX from block 12). Testnet is for development, wallet testing, and public trials only. Mainnet is **not launched yet** (`--allow-mainnet-mining` is required until public launch).
+**Testnet HMNY has no monetary value** and uses separate network IDs, ports, and genesis nonce. **Consensus rules mirror mainnet** (same hardfork heights in `hashmonkey-core/src/hardforks/hardforks.cpp`; **RandomX from block 12**). Testnet is for development, wallet testing, and public trials only. Mainnet is **not launched yet** (`--allow-mainnet-mining` is required until public launch).
 
-After a hardfork-schedule upgrade, wipe local testnet data (`~/.hashmonkeycoin/testnet` on Linux, `ProgramData\hashmonkeycoin\testnet` on Windows) and sync again from the seed.
+**Hardforks:** HMNY does not follow Monero’s historical fork calendar. See [TESTNET-GUIDE.md — Hardfork schedule (HMNY)](TESTNET-GUIDE.md#hardfork-schedule-hmny) and **hashmonkey-core/README-HMNY.md**. After a **consensus schedule change** in a new release, wipe local testnet chain data (`~/.hashmonkeycoin/testnet` on Linux, `%ProgramData%\hashmonkeycoin\testnet` on Windows) and sync again from `seednode.hashmonkeys.cloud`.
 
 ### Reference (source of truth)
 
@@ -60,17 +61,11 @@ Emission constants: `hashmonkey-core/src/cryptonote_config.h` (`EMISSION_SPEED_F
 
 ## Quick start (testnet)
 
-**Prebuilt binaries:** [Release v0.2.4-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.4-testnet) (Windows zip + Linux tarball). See [TESTNET-GUIDE.md](TESTNET-GUIDE.md). Delete `C:\ProgramData\hashmonkeycoin\testnet` before re-sync after upgrading.
+**Prebuilt binaries:** [v0.2.5-testnet](https://github.com/stabner/hashmonkeycoin/releases/tag/v0.2.5-testnet) (Windows zip + Linux tarball + `SHA256SUMS.txt`) · [all releases](https://github.com/stabner/hashmonkeycoin/releases).
 
-**User guides (download → run node → set up GUI):** [TESTNET-GUIDE.md](TESTNET-GUIDE.md)
+**New users:** [TESTNET-GUIDE.md](TESTNET-GUIDE.md) (download, wallet wizard, pool mining, troubleshooting).
 
-**Developers (build from source):**
-
-```bash
-cd hashmonkey-core && mkdir -p build/release && cd build/release
-cmake -DCMAKE_BUILD_TYPE=Release ../.. && make -j$(nproc) hashmonkeyd hashmonkey-wallet-cli
-./bin/hashmonkeyd --testnet --detach
-```
+**Developers:** same guide — [Build from source](TESTNET-GUIDE.md#build-from-source) and **hashmonkey-core/README-HMNY.md** / **hashmonkey-gui/README-HMNY.md**.
 
 ## HMNY-specific changes (summary)
 

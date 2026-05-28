@@ -75,7 +75,7 @@ Rectangle {
                 width: 360
                 height: 200
                 anchors.centerIn: parent
-                source: "qrc:///images/hmny-hero.png"
+                source: "qrc:///images/hmny-splash.png"
                 fillMode: Image.PreserveAspectFit
                 mipmap: true
             }

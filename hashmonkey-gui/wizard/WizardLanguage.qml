@@ -83,7 +83,7 @@ Rectangle {
 
         Image {
             id: heroImage
-            source: "qrc:///images/hmny-hero.png"
+            source: "qrc:///images/hmny-splash.png"
             opacity: 0
             property bool small: appWindow.width < 700
             Layout.preferredWidth: small ? 300 : 480

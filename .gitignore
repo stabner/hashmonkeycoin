@@ -42,6 +42,7 @@ Thumbs.db
 BUILD_STATUS.md
 TESTNET_README.txt
 roadmap.txt
+private/
 docs/
 infra/
 scripts/

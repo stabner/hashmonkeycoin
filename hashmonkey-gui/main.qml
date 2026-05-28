@@ -1283,6 +1283,12 @@ ApplicationWindow {
         });
     }
 
+    // FastBlur on Windows during splash slows startup; blur password/modals only.
+    property bool enableUiBlur: isOpenGL && !isWindows
+    property bool modalDialogOpen: passwordDialog.visible || inputDialog.visible || devicePassphraseDialog.visible
+    property bool otherModalOpen: updateDialog.visible || txConfirmationPopup.visible || successfulTxPopup.visible || remoteNodeDialog.visible
+    property bool blurEffectVisible: modalDialogOpen || otherModalOpen || (!isWindows && splash.visible)
+
     objectName: "appWindow"
     visible: true
     width: screenAvailableWidth > 980
@@ -1492,7 +1498,7 @@ ApplicationWindow {
             rootItem.state = "wizard"
         } else {
             wizard.wizardState = "wizardHome";
-            rootItem.state = "normal"
+            rootItem.state = "wizard"
             logger.resetLogFilePath(persistentSettings.portable);
             openWallet("wizard");
         }
@@ -1838,7 +1844,7 @@ ApplicationWindow {
     PasswordDialog {
         id: passwordDialog
         visible: false
-        z: parent.z + 2
+        z: 100
         anchors.fill: parent
         property var onAcceptedCallback
         property var onRejectedCallback
@@ -2020,9 +2026,8 @@ ApplicationWindow {
             anchors.fill: blurredArea
             source: blurredArea
             radius: 64
-            visible: passwordDialog.visible || inputDialog.visible || splash.visible || updateDialog.visible ||
-                devicePassphraseDialog.visible || txConfirmationPopup.visible || successfulTxPopup.visible ||
-                remoteNodeDialog.visible
+            // Windows: blur when password/modals open (not splash at launch). Linux/Mac: all modals + splash.
+            visible: isOpenGL && appWindow.blurEffectVisible
         }
 
 
@@ -2462,11 +2467,20 @@ ApplicationWindow {
 
     Rectangle {
         id: inactiveOverlay
-        visible: blur.visible
+        z: 50
+        visible: blur.visible || modalDialogOpen || inputDialog.visible || splash.visible || otherModalOpen
         anchors.fill: parent
         anchors.topMargin: titleBar.height
         color: MoneroComponents.Style.blackTheme ? "black" : "white"
-        opacity: isOpenGL ? 0.3 : inputDialog.visible || splash.visible ? 0.7 : 1.0
+        opacity: {
+            if (blur.visible)
+                return 0.3;
+            if (modalDialogOpen || inputDialog.visible)
+                return isWindows ? 0.82 : 0.7;
+            if (splash.visible)
+                return isWindows ? 0.45 : 0.7;
+            return 1.0;
+        }
 
         MoneroEffects.ColorTransition {
             targetObj: parent
