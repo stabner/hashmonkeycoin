@@ -69,7 +69,7 @@
 #include "qt/utils.h"
 #include "qt/TailsOS.h"
 #include "qt/KeysFiles.h"
-#include "qt/MoneroSettings.h"
+#include "qt/HmnySettings.h"
 #include "qt/NetworkAccessBlockingFactory.h"
 #ifdef Q_OS_MAC
 #include "qt/macoshelper.h"
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 
     // Ask to enable Tails OS persistence mode, it affects:
     // - Log file location
-    // - QML Settings file location (monero-core.conf)
+    // - QML Settings file location (hashmonkey-core.conf)
     // - Default wallets path
     // Target directory is: ~/Persistent/Monero
     if (isTails) {
@@ -384,7 +384,7 @@ Verify update binary using 'shasum'-compatible (SHA256 algo) output signed by tw
     qmlRegisterType<WalletManager>("moneroComponents.WalletManager", 1, 0, "WalletManager");
 
     // Temporary Qt.labs.settings replacement
-    qmlRegisterType<MoneroSettings>("moneroComponents.Settings", 1, 0, "MoneroSettings");
+    qmlRegisterType<HmnySettings>("hmnyComponents.Settings", 1, 0, "HmnySettings");
 
     qmlRegisterUncreatableType<Wallet>("moneroComponents.Wallet", 1, 0, "Wallet", "Wallet can't be instantiated directly");
 
@@ -503,7 +503,7 @@ Verify update binary using 'shasum'-compatible (SHA256 algo) output signed by tw
     if (accountName.isEmpty())
         accountName = qgetenv("USERNAME"); // Windows
     if (accountName.isEmpty())
-        accountName = "My monero Account";
+        accountName = "My HMNY Account";
 
     engine.rootContext()->setContextProperty("defaultAccountName", accountName);
     engine.rootContext()->setContextProperty("homePath", QDir::homePath());
@@ -529,7 +529,7 @@ Verify update binary using 'shasum'-compatible (SHA256 algo) output signed by tw
 #endif
     engine.rootContext()->setContextProperty("builtWithDesktopEntry", builtWithDesktopEntry);
 
-    engine.rootContext()->setContextProperty("moneroVersion", MONERO_VERSION_FULL);
+    engine.rootContext()->setContextProperty("hmnyCoreVersion", MONERO_VERSION_FULL);
 
     // Load main window (context properties needs to be defined obove this line)
     engine.load(QUrl(QStringLiteral("qrc:///main.qml")));

@@ -14,10 +14,10 @@ option(USE_DEVICE_TREZOR "Trezor support compilation" ON)
 option(WITH_SCANNER "Enable webcam QR scanner" OFF)
 option(WITH_DESKTOP_ENTRY "Ask to install desktop entry on first startup" ON)
 option(WITH_UPDATER "Regularly check for new updates" OFF)
-option(DEV_MODE "Checkout latest monero master on build" OFF)
+option(DEV_MODE "Checkout latest hashmonkey-core master on build" OFF)
 
 if(DEV_MODE)
-  # DEV_MODE checks out the monero submodule to master, which requires C++17.
+  # DEV_MODE checks out the hashmonkey-core submodule to master, which requires C++17.
   set(CMAKE_CXX_STANDARD 17)
 else()
   set(CMAKE_CXX_STANDARD 14)

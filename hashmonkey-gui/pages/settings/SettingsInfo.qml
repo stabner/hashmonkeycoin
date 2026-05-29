@@ -105,7 +105,7 @@ Rectangle {
             MoneroComponents.TextBlock {
                 font.pixelSize: 14
                 color: MoneroComponents.Style.dimmedFontColor
-                text: moneroVersion
+                text: hmnyCoreVersion
             }
 
             Rectangle {
@@ -386,7 +386,7 @@ Rectangle {
                 onClicked: {
                     var data = "";
                     data += "GUI version: " + Version.GUI_VERSION + " (Qt " + qtRuntimeVersion + ")";
-                    data += "\nEmbedded HashmonkeyCoin version: " + moneroVersion;
+                    data += "\nEmbedded HashmonkeyCoin version: " + hmnyCoreVersion;
                     data += "\nWallet path: " + walletLocation.walletPath;
 
                     data += "\nWallet restore height: ";

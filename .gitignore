@@ -11,8 +11,9 @@
 *.exe
 *.dylib
 
-# Duplicate core copies inside GUI tree (use top-level hashmonkey-core/)
+# Duplicate core copies inside GUI tree (use top-level hashmonkey-core/ + contrib/prepare-gui-build.sh)
 hashmonkey-gui/hashmonkey-core/
+# Legacy upstream name — do not recreate; removed from HMNY build layout
 hashmonkey-gui/monero/
 
 # Logs and local artifacts

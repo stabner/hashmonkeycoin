@@ -34,7 +34,7 @@ jobs:
       env:
         FLATPAK_BUILDER_N_JOBS: 3
       with:
-        manifest-path: share/org.getmonero.Monero.yaml
+        manifest-path: share/org.hashmonkeycoin.Wallet.yaml
         arch: ${{ matrix.arch }}
         cache: false
         stop-at-module: boost
@@ -84,7 +84,7 @@ jobs:
       env:
         FLATPAK_BUILDER_N_JOBS: 3
       with:
-        manifest-path: share/org.getmonero.Monero.yaml
+        manifest-path: share/org.hashmonkeycoin.Wallet.yaml
         arch: ${{ matrix.arch }}
         cache: false
         stop-at-module: monero-gui
@@ -117,8 +117,8 @@ jobs:
 
     - name: Add version and date
       run: |
-        sed -i 's/<version>/${{ github.event.release.tag_name }}/g' $GITHUB_WORKSPACE/share/org.getmonero.Monero.metainfo.xml
-        sed -i 's/<date>/'"$(date '+%F')"'/g' $GITHUB_WORKSPACE/share/org.getmonero.Monero.metainfo.xml
+        sed -i 's/<version>/${{ github.event.release.tag_name }}/g' $GITHUB_WORKSPACE/share/org.hashmonkeycoin.Wallet.metainfo.xml
+        sed -i 's/<date>/'"$(date '+%F')"'/g' $GITHUB_WORKSPACE/share/org.hashmonkeycoin.Wallet.metainfo.xml
 
     - name: Install deps
       run: dnf -y install docker
@@ -141,13 +141,13 @@ jobs:
       env:
         FLATPAK_BUILDER_N_JOBS: 3
       with:
-        manifest-path: share/org.getmonero.Monero.yaml
+        manifest-path: share/org.hashmonkeycoin.Wallet.yaml
         arch: ${{ matrix.arch }}
         cache: false
 
     - name: Validate AppData
       working-directory: flatpak_app/files/share/appdata
-      run: appstream-util validate org.getmonero.Monero.appdata.xml
+      run: appstream-util validate org.hashmonkeycoin.Wallet.appdata.xml
 
     - name: Delete flatpak-builder
       uses: geekyeggo/delete-artifact@v2
@@ -159,11 +159,11 @@ jobs:
       run: |
         echo "Hashes of the ${{ matrix.arch }} binaries:" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        for bin in monero-blockchain-ancestry monero-blockchain-depth monero-blockchain-export monero-blockchain-import monero-blockchain-mark-spent-outputs monero-blockchain-prune monero-blockchain-prune-known-spent-data monero-blockchain-stats monero-blockchain-usage monerod monero-gen-ssl-cert monero-gen-trusted-multisig monero-wallet-cli monero-wallet-gui monero-wallet-rpc p2pool; do sha256sum $bin; done >> $GITHUB_STEP_SUMMARY
+        for bin in monero-blockchain-ancestry monero-blockchain-depth monero-blockchain-export monero-blockchain-import monero-blockchain-mark-spent-outputs monero-blockchain-prune monero-blockchain-prune-known-spent-data monero-blockchain-stats monero-blockchain-usage monerod monero-gen-ssl-cert monero-gen-trusted-multisig monero-wallet-cli hashmonkey-wallet-gui monero-wallet-rpc p2pool; do sha256sum $bin; done >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
         echo "An example command to check hashes:" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        echo "$ flatpak run --command=sha256sum org.getmonero.Monero /app/bin/monero-wallet-gui" >> $GITHUB_STEP_SUMMARY
+        echo "$ flatpak run --command=sha256sum org.hashmonkeycoin.Wallet /app/bin/hashmonkey-wallet-gui" >> $GITHUB_STEP_SUMMARY
         echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
     - name: Publish to Flathub Beta

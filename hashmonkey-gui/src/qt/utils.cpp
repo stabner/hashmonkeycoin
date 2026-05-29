@@ -85,7 +85,7 @@ QString getAccountName(){
     if (accountName.isEmpty())
         accountName = qgetenv("USERNAME"); // Windows
     if (accountName.isEmpty())
-        accountName = "My monero Account";
+        accountName = "My HMNY Account";
     return accountName;
 }
 
@@ -93,21 +93,21 @@ QString getAccountName(){
 QString xdgMime(){
     return QString(
         "[Desktop Entry]\n"
-        "Name=Monero GUI\n"
-        "GenericName=Monero-GUI\n"
-        "X-GNOME-FullName=Monero-GUI\n"
-        "Comment=Monero GUI\n"
-        "Keywords=Monero;\n"
+        "Name=HashmonkeyCoin Wallet\n"
+        "GenericName=HashmonkeyCoin Wallet\n"
+        "X-GNOME-FullName=HashmonkeyCoin Wallet\n"
+        "Comment=HashmonkeyCoin desktop wallet\n"
+        "Keywords=HashmonkeyCoin;HMNY;\n"
         "Exec=\"%1\" %u\n"
         "Terminal=false\n"
         "Type=Application\n"
-        "Icon=monero\n"
+        "Icon=hashmonkeycoin\n"
         "Categories=Network;GNOME;Qt;\n"
-        "MimeType=x-scheme-handler/monero;x-scheme-handler/moneroseed\n"
+        "MimeType=x-scheme-handler/hmny\n"
         "StartupNotify=true\n"
         "X-GNOME-Bugzilla-Bugzilla=GNOME\n"
         "X-GNOME-UsesNotifications=true\n"
-        "StartupWMClass=monero-wallet-gui\n"
+        "StartupWMClass=hashmonkey-wallet-gui\n"
     ).arg(QCoreApplication::applicationFilePath());
 }
 
@@ -119,7 +119,7 @@ void registerXdgMime(){
     // - Tails written to persistent dotfiles
     QString mime = xdgMime();
     QString appPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
-    QString filePath = QString("%1/monero-gui.desktop").arg(appPath);
+    QString filePath = QString("%1/hashmonkey-wallet-gui.desktop").arg(appPath);
 
     if (TailsOS::detect())
     {

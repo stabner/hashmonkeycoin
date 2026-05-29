@@ -1,0 +1,10 @@
+﻿[Desktop Entry]
+Name=HashmonkeyCoin Wallet
+GenericName=HashmonkeyCoin Wallet
+Comment=HashmonkeyCoin desktop wallet
+Exec=hashmonkey-wallet-gui
+Type=Application
+Terminal=false
+Categories=Network;Qt;Finance;Office;
+Icon=org.hashmonkeycoin.Wallet
+StartupNotify=true

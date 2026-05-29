@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+    <id>org.hashmonkeycoin.Wallet</id>
+    <metadata_license>CC0-1.0</metadata_license>
+    <project_license>BSD-3-Clause</project_license>
+    <content_rating type="oars-1.1"/>
+    <developer_name>HashmonkeyCoin Project</developer_name>
+    <categories>
+        <category>Network</category>
+        <category>Qt</category>
+        <category>Finance</category>
+        <category>Office</category>
+    </categories>
+    <name>HashmonkeyCoin Wallet</name>
+    <summary>HashmonkeyCoin (HMNY) desktop wallet</summary>
+
+    <description>
+        <p>HashmonkeyCoin (HMNY) is a privacy-focused cryptocurrency fork based on the Monero codebase.
+            This wallet connects to the HMNY testnet or a local node for sending and receiving coins.</p>
+    </description>
+
+    <launchable type="desktop-id">org.hashmonkeycoin.Wallet.desktop</launchable>
+
+    <url type="homepage">https://github.com/stabner/hashmonkeycoin</url>
+    <url type="bugtracker">https://github.com/stabner/hashmonkeycoin/issues</url>
+
+    <releases>
+        <release version="0.2.5-testnet" date="2026-05-28"/>
+    </releases>
+</component>

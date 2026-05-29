@@ -306,14 +306,18 @@ sudo apt install -y qtbase5-dev qtdeclarative5-dev qttools5-dev qttools5-dev-too
   libqt5svg5-dev libqt5xmlpatterns5-dev libqt5quickcontrols2-5
 ```
 
-Build **core first**, then wire the core tree into `hashmonkey-gui` per upstream Monero GUI layout and compile:
+Build **core first**, then prepare the GUI tree and compile:
 
 ```bash
-cd hashmonkeycoin/hashmonkey-gui
+cd hashmonkeycoin
+bash contrib/prepare-gui-build.sh
+cd hashmonkey-gui
 mkdir -p build/release && cd build/release
-cmake -DCMAKE_BUILD_TYPE=Release -DWITH_UPDATER=OFF ../..
+cmake -DCMAKE_BUILD_TYPE=Release -DMANUAL_SUBMODULES=1 -DWITH_UPDATER=OFF ../..
 make -j"$(nproc)" hashmonkey-wallet-gui
 ```
+
+`prepare-gui-build.sh` copies `hashmonkey-core/` into `hashmonkey-gui/hashmonkey-core/` (required; that folder is not committed). Re-run it after core changes.
 
 Ship **`hashmonkeyd`** next to the GUI for full-node mode. Full GUI notes: **hashmonkey-gui/README-HMNY.md**.
 
@@ -328,7 +332,8 @@ Packagers: build with the same **depends / cross-compile** approach as [monero-g
 | Error | Fix |
 |-------|-----|
 | `Could NOT find Sodium` / `Unbound` / `libzmq` | Install `libsodium-dev`, `libunbound-dev`, `libzmq3-dev`. |
-| `monero/crypto/amd64-64-24k.h: No such file` | `git submodule update --init --recursive`, or `-DMONERO_WALLET_CRYPTO_LIBRARY=cn`. |
+| `monero/crypto/amd64-64-24k.h: No such file` | `git submodule update --init --recursive` in `hashmonkey-core`, or `-DMONERO_WALLET_CRYPTO_LIBRARY=cn`. |
+| `missing hashmonkey-gui/hashmonkey-core` / submodule check fails | Run `bash contrib/prepare-gui-build.sh` from repo root, then `cmake -DMANUAL_SUBMODULES=1`. |
 | `Could NOT find Boost` | `sudo apt install libboost-all-dev` |
 | Build killed / OOM | `cmake --build build -j2` |
 

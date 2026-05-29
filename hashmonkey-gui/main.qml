@@ -1526,11 +1526,11 @@ ApplicationWindow {
         remoteNodesModel.initialize();
     }
 
-    MoneroSettings {
+    HmnySettings {
         id: persistentSettings
         fileName: {
             if(isTails && tailsUsePersistence)
-                return homePath + "/Persistent/HashmonkeyCoin/monero-core.conf";
+                return homePath + "/Persistent/HashmonkeyCoin/hashmonkey-core.conf";
             return "";
         }
 

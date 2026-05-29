@@ -21,14 +21,19 @@ Install dependencies and build **`hashmonkey-core`** as described in **[TESTNET-
 
 You need a built `hashmonkeyd` and linked libraries before the GUI will compile.
 
-### 2. Link core into the GUI tree
+### 2. Prepare the GUI build tree
 
-From the repository root, copy or symlink your built core into the GUI tree (same layout as upstream Monero GUI):
+The GUI CMake project expects core sources at **`hashmonkey-gui/hashmonkey-core/`** (gitignored copy of top-level **`hashmonkey-core/`**).
 
-- `hashmonkey-gui/hashmonkey-core/` — HMNY core sources (or build output tree per upstream CMake docs)
-- `hashmonkey-gui/monero/` — often a second copy/symlink expected by legacy CMake paths
+From the repository root:
 
-Follow the upstream **monero-gui** `README.md` in this folder for the exact `monero` / `hashmonkey-core` layout your CMake version expects.
+```bash
+bash contrib/prepare-gui-build.sh
+```
+
+This rsyncs `hashmonkey-core/` → `hashmonkey-gui/hashmonkey-core/`. Re-run after every core change.
+
+**Do not use** a legacy `hashmonkey-gui/monero/` folder — it was removed from the HMNY build layout.
 
 ### 3. Linux GUI dependencies (Qt 5)
 
@@ -45,7 +50,7 @@ sudo apt install -y qtbase5-dev qtdeclarative5-dev qttools5-dev qttools5-dev-too
 ```bash
 cd hashmonkey-gui
 mkdir -p build/release && cd build/release
-cmake -DCMAKE_BUILD_TYPE=Release -DWITH_UPDATER=OFF ../..
+cmake -DCMAKE_BUILD_TYPE=Release -DMANUAL_SUBMODULES=1 -DWITH_UPDATER=OFF ../..
 make -j"$(nproc)" hashmonkey-wallet-gui
 ```
 
@@ -59,13 +64,15 @@ Building on Windows is **advanced** (MSYS2/MinGW with Monero **depends**, or a c
 
 ### Brand images
 
-Release builds use HMNY artwork under `hashmonkey-gui/images/` (for example `hmny-hero.png`, `hmny-titlebar-128.png`). Rebuild QML resources after changing PNGs (`qml.qrc`).
+Release builds use HMNY artwork under `hashmonkey-gui/images/` (`hmny-splash.png`, `hmny-titlebar-128.png`, etc.). Regenerate from `logo/` with `python scripts/apply_hmny_brand.py` (maintainer script), then rebuild QML resources.
 
 ## Rebrand notes
 
-- User-visible strings use HMNY / HashmonkeyCoin in QML and C++ `tr()` sources where updated.
-- Internal QML import `moneroComponents` is unchanged (not shown to end users).
-- Files under `translations/` may still say “Monero” until refreshed with Qt `lupdate` / `lrelease`.
+- User-visible strings use HMNY / HashmonkeyCoin in QML and C++ where updated.
+- Settings: **`HmnySettings`** / registry org **`hashmonkeycoin`**; config file **`hashmonkey-core.conf`** (Tails portable path).
+- GUI translations: **`translations/hmny-core_*.ts`** (was `monero-core_*`).
+- Internal QML import alias **`MoneroComponents`** remains (not shown to users; optional future rename).
+- **`hashmonkey-core/translations/monero_*.ts`** — CLI wallet locales; upstream filenames kept for compatibility.
 
 ## Upstream documentation
 
